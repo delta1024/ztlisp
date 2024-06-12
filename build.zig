@@ -31,6 +31,7 @@ pub fn build(b: *std.Build) void {
         .link_libc = true,
         .root_source_file = b.path("src/tlisp.zig"),
     });
+    tlisp.addImport("tlisp", tlisp);
     lib.root_module.addImport("tlisp", tlisp);
 
     lib.installHeader(b.path("include/tlisp.h"), "tlisp.h");
