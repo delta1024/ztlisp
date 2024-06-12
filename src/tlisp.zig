@@ -1,5 +1,5 @@
-pub const core = @import("core/core.zig");
-pub const State = @import("state/State.zig");
+pub const core = @import("core.zig");
+pub const State = @import("State.zig");
 
 test {
     _ = core;
