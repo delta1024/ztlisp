@@ -25,13 +25,13 @@ pub fn build(b: *std.Build) void {
         .link_libc = true,
     });
 
-    const core = b.createModule(.{
+    const tlisp = b.createModule(.{
         .optimize = optimize,
         .target = target,
         .link_libc = true,
-        .root_source_file = b.path("src/core.zig"),
+        .root_source_file = b.path("src/tlisp.zig"),
     });
-    lib.root_module.addImport("tlisp", core);
+    lib.root_module.addImport("tlisp", tlisp);
 
     lib.installHeader(b.path("include/tlisp.h"), "tlisp.h");
     // This declares intent for the library to be installed into the standard
@@ -80,19 +80,26 @@ pub fn build(b: *std.Build) void {
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const core_unit_tests = b.addTest(.{
-        .root_source_file = b.path("src/core.zig"),
+        .root_source_file = b.path("src/core/core.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
 
     const run_core_unit_tests = b.addRunArtifact(core_unit_tests);
+    const test_core_step = b.step("test/core", "Run tests for core module");
+    test_core_step.dependOn(&run_core_unit_tests.step);
 
+    const tlisp_unit_tests = b.addTest(.{
+        .root_source_file = b.path("src/tlisp.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
     // Similar to creating the run step earlier, this exposes a `test` step to
     // the `zig build --help` menu, providing a way for the user to request
     // running the unit tests.
+    const run_unit_tests = b.addRunArtifact(tlisp_unit_tests);
     const test_step = b.step("test", "Run unit tests");
-    test_step.dependOn(&run_core_unit_tests.step);
-    const test_core_step = b.step("test/core", "Run tests for core module");
-    test_core_step.dependOn(&run_core_unit_tests.step);
+    test_step.dependOn(&run_unit_tests.step);
 }
