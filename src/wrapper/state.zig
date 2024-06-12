@@ -36,5 +36,8 @@ export fn tlisp_state_call(state: ?*anyopaque, pos: i32, nargs: i32) void {
     const _self: *tlisp_State = @ptrCast(@alignCast(state));
     const self = _self.inner;
     self.chunk = self.compChunk.finalize() catch null;
-    std.debug.print("\n{?}\n", .{self.chunk});
+    self.vm.stack.reset();
+    self.vm.chunk = if (self.chunk) |*c| c else @panic("no chunk");
+    self.vm.ip = self.vm.chunk.code[0..0];
+    self.vm.run() catch {};
 }
