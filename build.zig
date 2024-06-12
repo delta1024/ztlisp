@@ -15,6 +15,8 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
+    const options = b.addOptions();
+    options.addOption(comptime_int, "STACK_MAX", std.math.maxInt(u8) + 1);
     const lib = b.addSharedLibrary(.{
         .name = "tlisp",
         // In this case the main source file is merely a path, however, in more
@@ -32,6 +34,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/tlisp.zig"),
     });
     tlisp.addImport("tlisp", tlisp);
+    tlisp.addOptions("config", options);
     lib.root_module.addImport("tlisp", tlisp);
 
     lib.installHeader(b.path("include/tlisp.h"), "tlisp.h");

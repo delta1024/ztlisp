@@ -4,6 +4,7 @@ const Self = @This();
 const tlisp = @import("tlisp");
 chunk: ?tlisp.core.Chunk,
 compChunk: tlisp.core.chunk.CompilingChunk,
+vm: tlisp.runtime.Vm,
 
 pub fn init(allocator: Allocator) !*Self {
     const self = try allocator.create(Self);
