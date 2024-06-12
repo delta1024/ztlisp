@@ -1,14 +1,21 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Self = @This();
-message: []const u8,
+const tlisp = @import("tlisp");
+chunk: ?tlisp.core.Chunk,
+compChunk: tlisp.core.chunk.CompilingChunk,
 
 pub fn init(allocator: Allocator) !*Self {
     const self = try allocator.create(Self);
-    self.message = "Hello Mom\n";
+    self.compChunk = tlisp.core.chunk.CompilingChunk.init(allocator);
+    self.chunk = null;
     return self;
 }
 
 pub fn deinit(self: *Self, allocator: Allocator) void {
+    if (self.chunk) |*chunk|
+        chunk.deinit(allocator);
+    self.compChunk.deinit();
+
     allocator.destroy(self);
 }
